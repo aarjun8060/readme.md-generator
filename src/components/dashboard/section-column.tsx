@@ -127,9 +127,9 @@ const SectionColumn = ({
                         <div className="flex items-center text-left gap-2">
                             <Compass />
                             <div className="flex flex-col">
-                                Arjun
+                                aarjun8060
                                 <span className="text-muted-foreground">
-                                    Noida
+                                    Developer
                                 </span>
                             </div>
                         </div>

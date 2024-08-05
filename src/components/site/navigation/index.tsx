@@ -1,6 +1,8 @@
 'use client'
 import { ModeToggle } from '@/components/global/mode-toggle'
 import useDeviceDetect from '@/hooks/use-mobile-detect'
+import { useScrollTop } from '@/hooks/use-scroll-top'
+import { cn } from '@/lib/utils'
 import { Download } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -16,6 +18,7 @@ const Navigation = ({
 }:any) => {
   const pathname = usePathname();
   const { isMobile } = useDeviceDetect();
+  const scrolled = useScrollTop()
   const markdown = selectedSectionSlugs?.reduce((acc, section) => {
     const template = getTemplate(section);
     if (template) {
@@ -37,23 +40,24 @@ const Navigation = ({
     setShowModal(true);
   }
   return (
-    <div className="fixed top-0 right-0 left-0 p-4 flex items-center justify-between z-10 border-b-2 shadow-xl">
+    <div className={cn("fixed top-0 right-0 left-0 p-4 flex items-center justify-between z-10 border-b-2 shadow-xl",scrolled && 'bg-background')}>
       <aside className="flex items-center gap-2">
         <Image
-          src={'./assets/plura-logo.svg'}
+          src={'/assets/logo3.svg'}
           width={40}
           height={40}
           alt="plur logo"
+          className='text-background'
         />
-        <span className="text-xl font-bold">ReadMe.md</span>
+        <span className="text-xl font-bold text-[#007adf] dark:text-white">ReadMe.md</span>
       </aside>
       {
         pathname === '/' && (<nav className="hidden md:block absolute left-[50%] top-[50%] transform translate-x-[-50%] translate-y-[-50%]">
-          <ul className="flex items-center justify-center gap-8">
+          <ul className="flex items-center justify-center gap-8 font-bold">
             <Link href={'#'}>Home</Link>
-            <Link href={'#'}>About</Link>
+            <Link href={'#'}>Docs</Link>
             <Link href={'#'}>Documentation</Link>
-            <Link href={'#'}>Features</Link>
+            <a href={'https://aarjun8060.vercel.app/'} target='_blank'>Hire Me </a>
           </ul>
         </nav>)
       }
