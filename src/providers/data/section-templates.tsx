@@ -1,5 +1,6 @@
+import { SectionTemplates } from "@/types/dashboard";
 
-export const sectionTemplates = [
+export const sectionTemplates:SectionTemplates[] = [
     {
       slug: "title_and_description",
       name: "Title and Description",

@@ -1,12 +1,9 @@
-import useLocalStorage from "@/hooks/use-local-storage";
-import { useMemo, useState } from "react";
-import SideBar from "./sidebar";
-import { AspectRatio } from "../ui/aspect-ratio";
-import Image from "next/image";
+import { DragEvent, useState } from "react";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { ScrollArea } from "../ui/scroll-area";
 import { toast } from "sonner";
+import useLocalStorage from "@/hooks/use-local-storage";
 import { 
     ChevronsUpDown, 
     Compass 
@@ -30,7 +27,9 @@ import {
     SortableContext,
     sortableKeyboardCoordinates
 } from "@dnd-kit/sortable";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import { 
+    restrictToVerticalAxis 
+} from "@dnd-kit/modifiers";
 import {
     Command,
     CommandEmpty,
@@ -41,8 +40,19 @@ import {
 } from "../ui/command";
 import CustomSection from "./custom-section";
 import Sortableitems from "./sortable-items";
-
-
+import { SectionTemplates } from "@/types/dashboard";
+interface SectionColumProps {
+    selectedSectionSlugs:string[];
+    setSelectedSectionSlugs:(val:string[]) => void;
+    sectionSlugs:string[];
+    setSectionSlugs:(val:string[]) => void;
+    focusedSelectionSlug:string | null;
+    setFocusedSectionSlug:(val:string|null) => void;
+    templates:SectionTemplates[];
+    originalTemplate:SectionTemplates[];
+    setTemplates: (val:SectionTemplates[]) => void;
+    getTemplate:(val:string) => SectionTemplates | undefined;
+}
 const SectionColumn = ({
     selectedSectionSlugs,
     setSelectedSectionSlugs,
@@ -54,13 +64,9 @@ const SectionColumn = ({
     originalTemplate,
     setTemplates,
     getTemplate,
-}: any) => {
-    console.log('templates',templates)
-    console.log('selectedSectionSlugs',selectedSectionSlugs)
-    const [pageRefreshed, setPageRefreshed] = useState(false);
-    const [addAction, setAction] = useState(false);
-    const [currentSlugList, setCurrentSlugList] = useState([]);
-    const [slugsFromPreviousSession, setSlugsFromPreviousSession] = useState([]);
+}:SectionColumProps) => {
+    const [pageRefreshed, setPageRefreshed] = useState<boolean>(false);
+    const [addAction, setAction] = useState<boolean>(false);
     const {
         saveBackUp,
         deleteBackUp,
@@ -75,10 +81,11 @@ const SectionColumn = ({
         useSensor(TouchSensor)
     )
 
-    const handleDragEnd = (event) => {
+    const handleDragEnd = (event:any) => {
         const { active, over } = event;
         if(active.id !== over.id){
-            setSelectedSectionSlugs((sections) => {
+            setSelectedSectionSlugs((sections:string[]) => {
+                console.log('sections',sections);
                 const oldIndex = sections && sections.findIndex((s) => s === active.id)
                 const newIndex = sections && sections.findIndex((s) => s === over.id)
                 return arrayMove(sections,oldIndex,newIndex);
@@ -86,22 +93,24 @@ const SectionColumn = ({
         }
     }
 
-    const onAddSection = (e, section) => {
+    const onAddSection = (e:React.MouseEvent<HTMLButtonElement>, section:string) => {
         console.log('hello Add section fun',section)
         localStorage.setItem('current-focused-slug', section);
         setFocusedSectionSlug(section);
         setPageRefreshed(false);
         setAction(true);
-        setSectionSlugs((prev) => prev.filter((s) => s !== section));
-        setSelectedSectionSlugs((prev) => [...prev, section]);
+        setSectionSlugs(prev => {
+            return prev.filter(s => s !== section)
+        });
+        setSelectedSectionSlugs((prev:string[]) => [...prev, section]);
         toast.success('Add section successfully!')
     }
 
     console.log('focused',focusedSelectionSlug)
-    const onDeleteSection = (e,sectionSlug) => {
+    const onDeleteSection = (e:React.MouseEvent<HTMLButtonElement>,sectionSlug:string) => {
         e.stopPropagation();
         setSelectedSectionSlugs((prev) => prev && prev.filter((s) => s != sectionSlug));
-        setSectionSlugs((prev) => [...prev,sectionSlug]);
+        setSectionSlugs((prev:string[]) => [...prev,sectionSlug]);
         setFocusedSectionSlug(null);
         localStorage.setItem("current-focused-slug", "noEdit");
         toast.success('Deleted Section Successfully!');
@@ -220,26 +229,28 @@ const SectionColumn = ({
                         <CommandGroup className="">
                             <ScrollArea className="!w-full h-[300px]">
                                 {
-                                    (pageRefreshed &&
-                                        slugsFromPreviousSession.indexOf("title-and-description") == -1
-                                        ? sectionSlugs.push("title-and-description")
-                                        : "",
-                                        alphabetizedSectionSlugs.map((s: any) => {
+                                    ( 
+                                        // pageRefreshed &&
+                                        // slugsFromPreviousSession.indexOf("title-and-description") == -1
+                                        // ? sectionSlugs.push("title-and-description")
+                                        // : "",
+                                        alphabetizedSectionSlugs.map((s:string) => {
                                             const template = getTemplate(s);
-                                            if (template) {
+                                            if (template){
                                                 return (
                                                     <CommandItem
                                                         key={s}
                                                         className="md:w-[320px] w-full"
 
                                                     >
-                                                        <div
+                                                        <button
                                                             onClick={(e) => onAddSection(e, s)}
                                                             className="flex items-center gap-2 hover:bg-transparent rounded-md transition-all md:w-full w-[320px]"
-                                                        >{template.name}</div>
+                                                        >{template.name}</button>
                                                     </CommandItem>
                                                 );
                                             }
+                                            return null;
                                         }))
                                 }
                             </ScrollArea>

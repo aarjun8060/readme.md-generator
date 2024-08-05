@@ -4,7 +4,10 @@ import { Card } from '../ui/card';
 import { GripVertical, RotateCcw, Trash2 } from 'lucide-react';
 import { toast } from '../ui/use-toast';
 import { ToastAction } from '../ui/toast';
-const Sortableitems = (props) => {
+interface Props {
+
+}
+const Sortableitems = (props:any) => {
     const {
         attributes,
         listeners,

@@ -1,16 +1,21 @@
 'use strict'
 import useLocalStorage from "@/hooks/use-local-storage";
-import { Editor ,Monaco} from "@monaco-editor/react";
+import { SectionTemplates } from "@/types/dashboard";
+import { Editor ,EditorProps,Monaco} from "@monaco-editor/react";
 // import monacoThemes from 'monaco-themes';
 import { useEffect, useRef, useState } from 'react';
-
+interface MarkDownProps {
+    focusedSelectionSlug:string | null;
+    templates:SectionTemplates[];
+    setTemplates: (val:SectionTemplates[]) => void;
+}
 const MarkDownEditor = ({
     focusedSelectionSlug,
     templates,
     setTemplates
-}) => {
-    const  monacoEditorRef = useRef<Monaco>();
-    const [MonacoEditor, setMonacoEditor] = useState(null);
+}:MarkDownProps) => {
+    const  monacoEditorRef = useRef<EditorProps>();
+    const [MonacoEditor, setMonacoEditor] = useState<any>();
     const { saveBackUp } = useLocalStorage()
     // get Markdown
     const getMarkDown = () => {
@@ -19,20 +24,20 @@ const MarkDownEditor = ({
         return section ? section.markdown : '';
     }
     const [markdown, setMarkdown] = useState(getMarkDown());
-    const handleEditorDidMount = (editor) => {
+    const handleEditorDidMount = (editor:EditorProps) => {
         monacoEditorRef.current = editor;
         // setEditorColorThemeFromLocalStorage();
     };
-    const onEdit = (val) => {
+    const onEdit = (val:string) => {
         console.log('val',val)
         setMarkdown(val);
 
-        const newTemplates = templates && templates.length>0 && templates.map((template) => {
+        const newTemplates = templates && templates.length>0 ? templates.map((template) => {
             if(template.slug === focusedSelectionSlug){
                 return {...template,markdown:val};
             }
             return template
-        }) 
+        }) : templates
         setTemplates(newTemplates);
         saveBackUp(newTemplates);
     }
@@ -41,7 +46,9 @@ const MarkDownEditor = ({
         if(!MonacoEditor){
             console.log('Enter in MONACO EDITOR')
             import("@monaco-editor/react").then((EditorComp) => {
-                setMonacoEditor(EditorComp.default);
+                if(EditorComp){
+                    setMonacoEditor(EditorComp.default);
+                }
             });
         }
     },[MonacoEditor,setMonacoEditor])

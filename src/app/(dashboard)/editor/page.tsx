@@ -1,28 +1,29 @@
 'use client'
-import { DownloadModal } from "@/components/dashboard/download-modal";
 import EditorPreviewPage from "@/components/dashboard/editor-container";
 import SectionColumn from "@/components/dashboard/section-column";
-import { ModeToggle } from "@/components/global/mode-toggle";
-import Navigation from "@/components/site/navigation";
-import { Button } from "@/components/ui/button";
 import useLocalStorage from "@/hooks/use-local-storage";
 import useDeviceDetect from "@/hooks/use-mobile-detect";
-import { cn } from "@/lib/utils";
+import { DownloadModal } from "@/components/dashboard/download-modal";
+import { ModeToggle } from "@/components/global/mode-toggle";
+import { Button } from "@/components/ui/button";
 import { sectionTemplates } from "@/providers/data/section-templates";
-import { Download, RotateCcw } from "lucide-react";
-import { useEffect, useState } from "react";
-interface SectionTemplatesInterface {
-    slug: string;
-    name: string;
-    markdown: string;
-}
+import { 
+    useEffect, 
+    useState 
+} from "react";
+import { 
+    Download, 
+    RotateCcw 
+} from "lucide-react";
+import { SectionTemplates } from "@/types/dashboard";
+
 const Editor = () => {
     const { isMobile } = useDeviceDetect();
-    const [selectionSlugs, setSelectionSlugs] = useState(sectionTemplates.map((t) => t.slug));
+    const [selectionSlugs, setSectionSlugs] = useState<string[]>(sectionTemplates.map((t) => t.slug));
     const [selectedSelectionSlugs, setSelectedSelectionSlugs] = useState<string[]>([]);
     const [focusedSelectionSlug, setFocusedSelectionSlug] = useState<string | null>(null);
-    const [showModal, setShowModal] = useState(false);
-    const [templates, setTemplates] = useState(sectionTemplates);
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const [templates, setTemplates] = useState<SectionTemplates[]>(sectionTemplates);
     const [showDrawer, setShowDrawer] = useState<boolean>(false);
     const {
         backUp
@@ -34,8 +35,8 @@ const Editor = () => {
         }
     }, [backUp])
 
-    const getTemplate = (slug: string) => {
-        return templates.find((t) => t.slug === slug);
+    const getTemplate = (slug: string):SectionTemplates | undefined => {
+        return templates.find((t:SectionTemplates) => t.slug === slug);
     }
 
     useEffect(() => {
@@ -61,7 +62,7 @@ const Editor = () => {
     }, [selectedSelectionSlugs])
 
     const onMenuClick = () => setShowDrawer(!showDrawer)
-    const markdown =  selectedSelectionSlugs && selectedSelectionSlugs.length>0 ? selectedSelectionSlugs?.reduce((acc, section) => {
+    const markdown =  selectedSelectionSlugs && selectedSelectionSlugs.length>0 ? selectedSelectionSlugs?.reduce((acc, section:string) => {
         console.log('acc',acc,'section',section)
         const template = getTemplate(section);
         if (template) {
@@ -82,15 +83,9 @@ const Editor = () => {
         }
         setShowModal(true);
       }
+
     return (
         <div>
-            {/* <Navigation
-             selectedSectionSlugs={selectedSelectionSlugs}
-             isDrawerOpen={showDrawer}
-             setShowModal={setShowModal}
-             getTemplate={getTemplate}
-             onMenuClick={() => setShowDrawer(!showDrawer)}
-            /> */}
             {showModal && <DownloadModal setShowModal={toggleModal} />}
 
             <div className="w-full flex h-full">
@@ -99,7 +94,7 @@ const Editor = () => {
                     selectedSectionSlugs={selectedSelectionSlugs}
                     setSelectedSectionSlugs={setSelectedSelectionSlugs}
                     sectionSlugs={selectionSlugs}
-                    setSectionSlugs={setSelectionSlugs}
+                    setSectionSlugs={setSectionSlugs}
                     setFocusedSectionSlug={setFocusedSelectionSlug}
                     focusedSelectionSlug={focusedSelectionSlug}
                     templates={templates}
@@ -128,14 +123,8 @@ const Editor = () => {
                     <div className="w-full h-full">
                         <EditorPreviewPage
                             selectedSectionSlugs={selectedSelectionSlugs}
-                            // setSelectedSectionSlugs={setSelectedSelectionSlugs}
-                            // sectionSlugs={selectionSlugs}
-                            // setSectionSlugs={setSelectionSlugs}
-                            // setFocusedSectionSlug={setFocusedSelectionSlug}
                             focusedSelectionSlug={focusedSelectionSlug}
                             templates={templates}
-                             
-                            // originalTemplate={sectionTemplates}
                             setTemplates={setTemplates}
                             getTemplate={getTemplate}
                         />
