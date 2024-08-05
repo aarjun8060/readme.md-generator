@@ -16,6 +16,7 @@ import {
     RotateCcw 
 } from "lucide-react";
 import { SectionTemplates } from "@/types/dashboard";
+import { arrayMove } from "@dnd-kit/sortable";
 
 const Editor = () => {
     const { isMobile } = useDeviceDetect();
@@ -26,7 +27,8 @@ const Editor = () => {
     const [templates, setTemplates] = useState<SectionTemplates[]>(sectionTemplates);
     const [showDrawer, setShowDrawer] = useState<boolean>(false);
     const {
-        backUp
+        backUp,
+        saveBackUp
     } = useLocalStorage();
     const toggleModal = () => setShowModal(prevState => !prevState);
     useEffect(() => {
@@ -83,7 +85,53 @@ const Editor = () => {
         }
         setShowModal(true);
       }
+      const filterSelectedSectionSlugs = (sectionSlug: string): void => {
+        setSelectedSelectionSlugs((prev) => {
+          if (prev) {
+            return prev.filter((s) => s !== sectionSlug);
+          }
+          return [];
+        });
+      };
 
+      const filterSectionSlugs = (sectionSlug: string): void => {
+        setSectionSlugs((prev) => {
+          if (prev) {
+            return prev.filter((s) => s !== sectionSlug);
+          }
+          return [];
+        });
+      };
+
+      const addSelectedSectionSlug = (section: string): void => {
+        setSelectedSelectionSlugs((prev: string[]) => [...prev, section]);
+      };
+      const addSectionSlug = (section: string): void => {
+        setSectionSlugs((prev: string[]) => [...prev, section]);
+      };
+
+      const handleDragEnd = (event:any) :void => {
+        const { active, over } = event;
+        if(active.id !== over.id){
+            setSelectedSelectionSlugs((sections:string[]) => {
+                console.log('sections',sections);
+                const oldIndex = sections && sections.findIndex((s) => s === active.id)
+                const newIndex = sections && sections.findIndex((s) => s === over.id)
+                if (oldIndex === -1 || newIndex === -1) {
+                    return sections;
+                }
+                return arrayMove(sections,oldIndex,newIndex);
+            })
+        }
+        }
+
+        const addTemplates = (section:SectionTemplates)=> {
+            setTemplates((prev) => {
+                const newTemplate = [...prev,section];
+                saveBackUp(newTemplate)
+                return newTemplate;
+            })
+        }
     return (
         <div>
             {showModal && <DownloadModal setShowModal={toggleModal} />}
@@ -94,13 +142,16 @@ const Editor = () => {
                     selectedSectionSlugs={selectedSelectionSlugs}
                     setSelectedSectionSlugs={setSelectedSelectionSlugs}
                     sectionSlugs={selectionSlugs}
-                    setSectionSlugs={setSectionSlugs}
                     setFocusedSectionSlug={setFocusedSelectionSlug}
                     focusedSelectionSlug={focusedSelectionSlug}
-                    templates={templates}
-                    originalTemplate={sectionTemplates}
                     setTemplates={setTemplates}
                     getTemplate={getTemplate}
+                    filterSelectedSectionSlugs={filterSelectedSectionSlugs}
+                    filterSectionSlugs={filterSectionSlugs}
+                    addSelectedSectionSlug={addSelectedSectionSlug}
+                    addSectionSlug={addSectionSlug}
+                    handleDragEnd={handleDragEnd}
+                    addTemplates={addTemplates}
                     /> 
                 </div>
                 <div className="w-4/5 flex flex-col h-full">

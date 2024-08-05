@@ -4,10 +4,16 @@ import { Card } from '../ui/card';
 import { GripVertical, RotateCcw, Trash2 } from 'lucide-react';
 import { toast } from '../ui/use-toast';
 import { ToastAction } from '../ui/toast';
+import { SectionTemplates } from '@/types/dashboard';
 interface Props {
-
+    id:string;
+    setFocusedSectionSlug:(val:string) => void;
+    onDeleteSection:(e:any,val:string) => void;
+    onResetSection:(e:any,val:string) => void;
+    section:SectionTemplates;
+    focusedSelectionSlug:string | null;
 }
-const Sortableitems = (props:any) => {
+const Sortableitems = (props:Props) => {
     const {
         attributes,
         listeners,
@@ -26,17 +32,17 @@ const Sortableitems = (props:any) => {
         props.setFocusedSectionSlug(props.id);
     }
 
-    const onKeyUp = (e) => {
+    const onKeyUp = (e:React.KeyboardEvent<HTMLDivElement>) => {
         if(e.key.toLowerCase() === 'enter'){
             onClickSection();
         }
     }
 
-    const onClickTrash = (e) => {
+    const onClickTrash = (e:React.MouseEvent<SVGSVGElement>) => {
         props.onDeleteSection(e,props.section.slug);
     }
 
-    const onClickReset = (e) => {
+    const onClickReset = (e:React.MouseEvent<SVGSVGElement>) => {
         toast({
             variant: "destructive",
             title: "Reset the template",

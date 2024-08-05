@@ -45,25 +45,31 @@ interface SectionColumProps {
     selectedSectionSlugs:string[];
     setSelectedSectionSlugs:(val:string[]) => void;
     sectionSlugs:string[];
-    setSectionSlugs:(val:string[]) => void;
     focusedSelectionSlug:string | null;
     setFocusedSectionSlug:(val:string|null) => void;
-    templates:SectionTemplates[];
-    originalTemplate:SectionTemplates[];
     setTemplates: (val:SectionTemplates[]) => void;
     getTemplate:(val:string) => SectionTemplates | undefined;
+    filterSelectedSectionSlugs: (val:string)=> void;
+    filterSectionSlugs:(val:string) =>void;
+    addSelectedSectionSlug:(val:string) => void; 
+    addSectionSlug:(val:string) =>void;
+    handleDragEnd:(val:any) => void;
+    addTemplates:(val:SectionTemplates) => void;
 }
 const SectionColumn = ({
     selectedSectionSlugs,
     setSelectedSectionSlugs,
     sectionSlugs,
-    setSectionSlugs,
     setFocusedSectionSlug,
     focusedSelectionSlug,
-    templates,
-    originalTemplate,
     setTemplates,
     getTemplate,
+    filterSelectedSectionSlugs,
+    filterSectionSlugs,
+    addSelectedSectionSlug,
+    addSectionSlug,
+    handleDragEnd,
+    addTemplates
 }:SectionColumProps) => {
     const [pageRefreshed, setPageRefreshed] = useState<boolean>(false);
     const [addAction, setAction] = useState<boolean>(false);
@@ -81,40 +87,34 @@ const SectionColumn = ({
         useSensor(TouchSensor)
     )
 
-    const handleDragEnd = (event:any) => {
-        const { active, over } = event;
-        if(active.id !== over.id){
-            setSelectedSectionSlugs((sections:string[]) => {
-                console.log('sections',sections);
-                const oldIndex = sections && sections.findIndex((s) => s === active.id)
-                const newIndex = sections && sections.findIndex((s) => s === over.id)
-                return arrayMove(sections,oldIndex,newIndex);
-            })
-        }
-    }
-
     const onAddSection = (e:React.MouseEvent<HTMLButtonElement>, section:string) => {
         console.log('hello Add section fun',section)
         localStorage.setItem('current-focused-slug', section);
         setFocusedSectionSlug(section);
         setPageRefreshed(false);
         setAction(true);
-        setSectionSlugs(prev => {
-            return prev.filter(s => s !== section)
-        });
-        setSelectedSectionSlugs((prev:string[]) => [...prev, section]);
+        // setSectionSlugs(prev => {
+        //     return prev.filter(s => s !== section)
+        // });
+        filterSectionSlugs(section)
+        // setSelectedSectionSlugs((prev:string[]) => [...prev, section]);
+        addSelectedSectionSlug(section);
         toast.success('Add section successfully!')
     }
 
     console.log('focused',focusedSelectionSlug)
     const onDeleteSection = (e:React.MouseEvent<HTMLButtonElement>,sectionSlug:string) => {
         e.stopPropagation();
-        setSelectedSectionSlugs((prev) => prev && prev.filter((s) => s != sectionSlug));
-        setSectionSlugs((prev:string[]) => [...prev,sectionSlug]);
+        // setSelectedSectionSlugs((prev) => prev && prev.filter((s) => s != sectionSlug));
+        filterSelectedSectionSlugs(sectionSlug)
+
+        // setSectionSlugs((prev:string[]) => [...prev,sectionSlug]);
+        addSectionSlug(sectionSlug)
         setFocusedSectionSlug(null);
         localStorage.setItem("current-focused-slug", "noEdit");
         toast.success('Deleted Section Successfully!');
     }
+
 
     return (
         <ScrollArea className="h-[100vh]">
@@ -206,11 +206,12 @@ const SectionColumn = ({
                                 className="flex items-center gap-2 hover:bg-transparent rounded-md transition-all md:w-full w-[320px]"
                             >
                                 <CustomSection
-                                    setSelectedSectionSlugs={setSelectedSectionSlugs}
+                                    // setSelectedSectionSlugs={setSelectedSectionSlugs}
                                     setFocusedSectionSlug={setFocusedSectionSlug}
                                     setPageRefreshed={setPageRefreshed}
                                     setAddAction={setAction}
-                                    setTemplates={setTemplates}
+                                    addTemplates={addTemplates}
+                                    addSelectedSectionSlug={addSelectedSectionSlug}
                                 />
                             </div>
                         )}

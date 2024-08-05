@@ -14,18 +14,24 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-
+import { SectionTemplates } from "@/types/dashboard";
+interface CustomSectionProps {
+    addSelectedSectionSlug:(val:string) => void; 
+    setAddAction:(val:boolean)  => void; 
+    setPageRefreshed:(val:boolean)  => void; 
+    setFocusedSectionSlug:(val:string | null) => void;
+    addTemplates:(val:SectionTemplates) => void;
+}
 const CustomSection = ({
-    setTemplates,
-    setSelectedSectionSlugs,
+    addTemplates,
     setFocusedSectionSlug,
     setPageRefreshed,
-    setAddAction
-}:any) => {
+    setAddAction,
+    addSelectedSectionSlug
+}:CustomSectionProps) => {
     const [showModal, setShowModal] = useState(false);
     const [title, setTitle] = useState('');
     const { saveBackUp } = useLocalStorage();
-    const inputRef = useRef(null);
 
     const addCustomSection = () => {
         const section = {
@@ -35,14 +41,17 @@ const CustomSection = ({
         }
 
         localStorage.setItem('current-focused-slug',section.slug);
-        setTemplates((prev) => {
-            const newTemplate = [...prev,section];
-            saveBackUp(newTemplate)
-            return newTemplate;
-        })
+        // setTemplates((prev) => {
+        //     const newTemplate = [...prev,section];
+        //     saveBackUp(newTemplate)
+        //     return newTemplate;
+        // })
+        addTemplates(section);
         setPageRefreshed(false);
         setAddAction(true);
-        setSelectedSectionSlugs((prev) => [...prev,section?.slug]);
+        // setSelectedSectionSlugs((prev) => [...prev,section?.slug]);(
+        addSelectedSectionSlug(section.slug)
+        
         setFocusedSectionSlug(localStorage.getItem('current-focused-slug'));
 
         setShowModal(false)
