@@ -8,11 +8,13 @@ interface MarkDownProps {
     focusedSelectionSlug:string | null;
     templates:SectionTemplates[];
     setTemplates: (val:SectionTemplates[]) => void;
+    height?:string;
 }
 const MarkDownEditor = ({
     focusedSelectionSlug,
     templates,
-    setTemplates
+    setTemplates,
+    height
 }:MarkDownProps) => {
     const  monacoEditorRef = useRef<EditorProps>();
     const [MonacoEditor, setMonacoEditor] = useState<any>();
@@ -71,7 +73,7 @@ const MarkDownEditor = ({
                     value={markdown}
                     onChange={onEdit}
                     loading={"Loading..."}
-                    height={'100vh'}
+                    height={height || '100vh'}
                     aria-label="Markdown Editor"
                 />)
             }

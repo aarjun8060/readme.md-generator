@@ -22,9 +22,9 @@ const Navigation = () => {
       </aside>
        <nav className="hidden md:block absolute left-[50%] top-[50%] transform translate-x-[-50%] translate-y-[-50%]">
           <ul className="flex items-center justify-center gap-8 font-bold">
-            <Link href={'#'}>Home</Link>
-            <Link href={'#'}>Docs</Link>
-            <Link href={'#'}>Documentation</Link>
+            <Link href={'/'}>Home</Link>
+            {/* <Link href={'#'}>Docs</Link> */}
+            <Link href={'/docs'}>Learn MarkDown</Link>
             <a href={'https://aarjun8060.vercel.app/'} target='_blank'>Hire Me </a>
           </ul>
         </nav>

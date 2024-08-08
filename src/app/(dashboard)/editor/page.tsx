@@ -18,6 +18,7 @@ import {
 import { SectionTemplates } from "@/types/dashboard";
 import { arrayMove } from "@dnd-kit/sortable";
 
+
 const Editor = () => {
     const { isMobile } = useDeviceDetect();
     const [selectionSlugs, setSectionSlugs] = useState<string[]>(sectionTemplates.map((t) => t.slug));
