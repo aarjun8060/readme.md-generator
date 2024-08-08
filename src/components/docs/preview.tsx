@@ -38,8 +38,8 @@ const DocPreview = ({
                         />
                     </div>
                 </TabsContent>
-                <TabsContent value="preview" className="!w-full border-2 border-red-600">
-                    <div className="w-full prose max-w-full border-2">
+                <TabsContent value="preview" className="!w-full">
+                    <div className="w-full prose max-w-full ">
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm,remarkEmoji]}
                             components={{
